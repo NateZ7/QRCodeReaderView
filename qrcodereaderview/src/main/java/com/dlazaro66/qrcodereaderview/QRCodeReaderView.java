@@ -132,6 +132,7 @@ public class QRCodeReaderView extends SurfaceView
         } catch (FormatException e) {
             e.printStackTrace();
         }
+        
         return result == null ? null : result.getText();
     }
 
