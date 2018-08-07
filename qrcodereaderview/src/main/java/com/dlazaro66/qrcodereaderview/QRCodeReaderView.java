@@ -17,6 +17,7 @@ package com.dlazaro66.qrcodereaderview;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.hardware.Camera;
@@ -32,8 +33,12 @@ import com.google.zxing.BinaryBitmap;
 import com.google.zxing.ChecksumException;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.FormatException;
+import com.google.zxing.LuminanceSource;
+import com.google.zxing.MultiFormatReader;
 import com.google.zxing.NotFoundException;
 import com.google.zxing.PlanarYUVLuminanceSource;
+import com.google.zxing.RGBLuminanceSource;
+import com.google.zxing.Reader;
 import com.google.zxing.Result;
 import com.google.zxing.ResultPoint;
 import com.google.zxing.client.android.camera.CameraManager;
@@ -100,6 +105,34 @@ public class QRCodeReaderView extends SurfaceView
      */
     public void setOnQRCodeReadListener(OnQRCodeReadListener onQRCodeReadListener) {
         mOnQRCodeReadListener = onQRCodeReadListener;
+    }
+
+    /**
+     * Getting a bitmap, and extract the text inside and return it
+     * @param bitmap - to extract the text from
+     * @return text inside the QR code of bitmap
+     */
+    public String getQRTextFromBitmap(Bitmap bitmap) {
+        int[] intArray = new int[bitmap.getWidth()*bitmap.getHeight()];
+
+        //copy pixel data from the Bitmap into the 'intArray' array
+        bitmap.getPixels(intArray, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+        LuminanceSource source = new RGBLuminanceSource(bitmap.getWidth(), bitmap.getHeight(), intArray);
+        BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
+
+        Reader reader = new MultiFormatReader();
+        Result result = null;
+        try {
+            result = reader.decode(binaryBitmap);
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        } catch (ChecksumException e) {
+            e.printStackTrace();
+        } catch (FormatException e) {
+            e.printStackTrace();
+        }
+        return result.getText();
     }
 
     /**
