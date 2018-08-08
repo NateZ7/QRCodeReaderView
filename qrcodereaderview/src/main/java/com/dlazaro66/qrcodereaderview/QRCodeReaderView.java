@@ -126,13 +126,13 @@ public class QRCodeReaderView extends SurfaceView
         try {
             result = reader.decode(binaryBitmap);
         } catch (NotFoundException e) {
-            e.printStackTrace();
+            SimpleLog.w(TAG, "NotFoundException", e);
         } catch (ChecksumException e) {
-            e.printStackTrace();
+            SimpleLog.w(TAG, "ChecksumException", e);
         } catch (FormatException e) {
-            e.printStackTrace();
+            SimpleLog.w(TAG, "FormatException", e);
         }
-        
+
         return result == null ? null : result.getText();
     }
 
